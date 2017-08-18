@@ -44,7 +44,7 @@ import static com.yep.user21.internprj1.R.id.txtLocation;
 
 public class MainActivity extends AppCompatActivity {
 
-    public VisionServiceClient visionServiceClient = new VisionServiceRestClient("6a628b5b0e3a4c119ba99dc4b9cb972d");
+    public VisionServiceClient visionServiceClient = new VisionServiceRestClient("YOUR_API_KEY :) ");
     public Bitmap imageBitmap;
     public ByteArrayInputStream inputStream;
 
