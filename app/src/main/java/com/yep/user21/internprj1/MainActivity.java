@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.test.mock.MockPackageManager;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -126,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
 
                 Mydataobject.setLocation(tempLoc);
                 Mydataobject.setDesc(tempName);
+                byte[] byteFormat = outputStream.toByteArray();
+                String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
+                Mydataobject.setImage(encodedImage);
 
                 ref.child("Details").push().setValue(Mydataobject);
 

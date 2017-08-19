@@ -8,6 +8,7 @@ public class MyData {
     //name and address string
     public String desc;
     public String location;
+    public String image;
 
     public MyData() {
       /*Blank default constructor essential for Firebase*/
@@ -18,6 +19,10 @@ public class MyData {
     }
 
 
+    public void setImage(String img)
+    {
+        this.image=img;
+    }
 
     public void setLocation(String loc) {
         this.location = loc;
