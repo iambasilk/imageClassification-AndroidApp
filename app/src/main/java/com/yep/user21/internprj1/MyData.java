@@ -13,6 +13,9 @@ public class MyData {
     public MyData() {
       /*Blank default constructor essential for Firebase*/
     }
+    public String getDesc(){
+        return desc;
+    }
 
     public void setDesc(String des) {
         this.desc = des;

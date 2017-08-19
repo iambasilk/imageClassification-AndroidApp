@@ -2,18 +2,23 @@ package com.yep.user21.internprj1;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -31,7 +36,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ServerValue;
+import com.firebase.client.ValueEventListener;
 import com.google.gson.Gson;
 import com.microsoft.projectoxford.vision.VisionServiceClient;
 import com.microsoft.projectoxford.vision.VisionServiceRestClient;
@@ -53,22 +62,31 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CODE_PERMISSION = 2;
     public VisionServiceClient visionServiceClient = new VisionServiceRestClient("6a628b5b0e3a4c119ba99dc4b9cb972d");
+//    public BroadcastReceiver mybroadcast;
+//    public static final String DATA_SAVED_BROADCAST = "com.yep.user21.internprj1.datasaved";
+
     public Bitmap imageBitmap;
     public EditText textView;
+    public  ImageView imageView;
     public EditText txtLocation;
     public ByteArrayInputStream inputStream;
     public ByteArrayOutputStream outputStream;
-    public DatabaseHelper controller;
+    //public DatabaseHelper controller;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
     double latitude, longitude;
     GPSTracker gps;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        controller = new DatabaseHelper(this);
+        //controller = new DatabaseHelper(this);
+
+
 
         Button btnSave = (Button) findViewById(R.id.btnSave);
         Button btnTake = (Button) findViewById(R.id.btnTake);
@@ -106,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
         btnTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,23 +136,54 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String tempName = textView.getText().toString();
-                String tempLoc=  txtLocation.getText().toString();
-                Firebase.setAndroidContext(MainActivity.this);
+                final String tempName = textView.getText().toString();
+                final String tempLoc=  txtLocation.getText().toString();
 
-                Firebase ref = new Firebase(Config.FIREBASE_URL);
 
-                MyData Mydataobject=new MyData();
+                        //loading the names again
+                        //loadNames();
 
-                Mydataobject.setLocation(tempLoc);
-                Mydataobject.setDesc(tempName);
-                byte[] byteFormat = outputStream.toByteArray();
-                String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
-                Mydataobject.setImage(encodedImage);
+                        Firebase.setAndroidContext(MainActivity.this);
+                        Firebase ref = new Firebase(Config.FIREBASE_URL);
 
-                ref.child("Details").push().setValue(Mydataobject);
+                        ref.keepSynced(true);
 
-                System.out.println(tempName+" SAved to cloud succesfully basil!!!");
+
+                       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+                        MyData Mydataobject=new MyData();
+
+                        Mydataobject.setLocation(tempLoc);
+                        Mydataobject.setDesc(tempName);
+                        byte[] byteFormat = outputStream.toByteArray();
+                        String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
+                        Mydataobject.setImage(encodedImage);
+
+
+
+
+
+                        ref.child("Details").push().setValue(Mydataobject);
+
+                        Toast.makeText(getApplicationContext(), "Data sent to cloud successfully", Toast.LENGTH_LONG).show();
+
+                        imageView.setImageDrawable(null);
+                        textView.setText("");
+                        txtLocation.setText("");
+
+                        System.out.println(tempName+" SAved to cloud succesfully basil!!!");
+
+
+
+
+
+
+
+
+                //for decoding
+//                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                myimageview.setImageBitmap(decodedByte);
 
                 //controller.addEntry(tempName,outputStream.toByteArray());
 
@@ -164,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            imageView = (ImageView) findViewById(R.id.imageView);
             imageView.setImageBitmap(imageBitmap);
 
 
@@ -232,5 +282,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+
 
 
