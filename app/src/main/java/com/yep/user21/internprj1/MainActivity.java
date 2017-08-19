@@ -2,14 +2,10 @@ package com.yep.user21.internprj1;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
 import com.google.gson.Gson;
 import com.microsoft.projectoxford.vision.VisionServiceClient;
 import com.microsoft.projectoxford.vision.VisionServiceRestClient;
@@ -49,36 +44,32 @@ import static com.yep.user21.internprj1.R.id.txtLocation;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_CODE_PERMISSION = 2;
     public VisionServiceClient visionServiceClient = new VisionServiceRestClient("6a628b5b0e3a4c119ba99dc4b9cb972d");
     public Bitmap imageBitmap;
-    public EditText textView;
-    public EditText txtLocation;
     public ByteArrayInputStream inputStream;
-    public ByteArrayOutputStream outputStream;
-    public DatabaseHelper controller;
+
+
+    private static final int REQUEST_CODE_PERMISSION = 2;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
-    double latitude, longitude;
+    double latitude,longitude ;
     GPSTracker gps;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        controller = new DatabaseHelper(this);
 
         Button btnSave = (Button) findViewById(R.id.btnSave);
         Button btnTake = (Button) findViewById(R.id.btnTake);
-
 
         gps = new GPSTracker(MainActivity.this);
 
         if (gps.canGetLocation()) {
 
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
+             latitude = gps.getLatitude();
+             longitude = gps.getLongitude();
 
             //
             Toast.makeText(getApplicationContext(), "Your Location is - \nLat: "
@@ -112,37 +103,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                String tempName = textView.getText().toString();
-                String tempLoc=  txtLocation.getText().toString();
-                Firebase.setAndroidContext(MainActivity.this);
-
-                Firebase ref = new Firebase(Config.FIREBASE_URL);
-
-                MyData Mydataobject=new MyData();
-
-                Mydataobject.setLocation(tempLoc);
-                Mydataobject.setDesc(tempName);
-
-                ref.child("Details").push().setValue(Mydataobject);
-
-                System.out.println(tempName+" SAved to cloud succesfully basil!!!");
-
-                //controller.addEntry(tempName,outputStream.toByteArray());
-
-//                final Cursor cursor = controller.getAllPersons();
-//                String [] columns = new String[] {
-//                        DatabaseHelper.KEY,
-//                        DatabaseHelper.PERSON_COLUMN_NAME
-//                };
-            }
-        });
-
 
     }
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     public void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -164,10 +129,11 @@ public class MainActivity extends AppCompatActivity {
             imageView.setImageBitmap(imageBitmap);
 
 
-            //   System.out.println("Bas location called");
+         //   System.out.println("Bas location called");
 
 
-            outputStream = new ByteArrayOutputStream();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
@@ -203,15 +169,15 @@ public class MainActivity extends AppCompatActivity {
                     mDialog.dismiss();
 
                     AnalysisResult result = new Gson().fromJson(s, AnalysisResult.class);
-                    textView = (EditText) findViewById(R.id.txtDescription);
-                    txtLocation= (EditText) findViewById(R.id.txtLocation);
+                    EditText textView = (EditText) findViewById(R.id.txtDescription);
+                    EditText txtLocation=(EditText)findViewById(R.id.txtLocation);
                     StringBuilder stringBuilder = new StringBuilder();
 
                     for (Caption caption : result.description.captions) {
                         stringBuilder.append(caption.text);
                     }
                     textView.setText(stringBuilder);
-                    txtLocation.setText(latitude + " , " + longitude);
+                    txtLocation.setText(latitude+" , "+longitude);
                 }
 
 
@@ -225,8 +191,6 @@ public class MainActivity extends AppCompatActivity {
             visionTask.execute(inputStream);
         }
     }
-
-
 }
 
 
