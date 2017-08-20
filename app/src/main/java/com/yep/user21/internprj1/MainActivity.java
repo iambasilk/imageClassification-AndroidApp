@@ -52,6 +52,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+import static com.yep.user21.internprj1.R.id.btnSave;
 import static com.yep.user21.internprj1.R.id.imageView;
 import static com.yep.user21.internprj1.R.id.txtDescription;
 import static com.yep.user21.internprj1.R.id.txtLocation;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     public  ImageView imageView;
     public TextView txtLocation;
     public EditText txtUser;
+    public Button btnSave, btnTake;
     public ByteArrayInputStream inputStream;
     public ByteArrayOutputStream outputStream;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -82,9 +84,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final IntentFilter intentFilter=new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        Button btnSave = (Button) findViewById(R.id.btnSave);
-        Button btnTake = (Button) findViewById(R.id.btnTake);
+
+        btnSave = (Button) findViewById(R.id.btnSave);
+        btnTake = (Button) findViewById(R.id.btnTake);
+
+        btnSave.setEnabled(false);
 
 
         gps = new GPSTracker(MainActivity.this);
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                 writeData();
                 Toast.makeText(MainActivity.this,"Data Saved Succesfully",Toast.LENGTH_LONG).show();
+                btnSave.setEnabled(false);
 
 //               broadcastReceiver=new CheckInternetBroadcast() {
 //                    @Override
@@ -213,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(), "Data sent to cloud successfully", Toast.LENGTH_LONG).show();
 
           imageView.setImageDrawable(null);
-          textView.setText("AI Prediction :");
-        txtLocation.setText("Location :");
+        textView.setText("");
+        txtLocation.setText("");
         txtUser.setText("");
 
         System.out.println(tempName+" SAved to cloud succesfully basil!!!");
@@ -223,13 +228,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    protected void Synchronization(int flag)
-    {
-        if(flag==1)
-        {
-           writeData(); //call webservice or sync Adapters here to synch data
-        }
-    }
     public void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -249,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
             imageView = (ImageView) findViewById(R.id.imageView);
             imageView.setImageBitmap(imageBitmap);
 
+            btnSave.setEnabled(true);
 
             //   System.out.println("Bas location called");
 
@@ -296,8 +295,8 @@ public class MainActivity extends AppCompatActivity {
                     for (Caption caption : result.description.captions) {
                         stringBuilder.append(caption.text);
                     }
-                    textView.append(stringBuilder);
-                    txtLocation.append(latitude + " , " + longitude);
+                    textView.setText(stringBuilder);
+                    txtLocation.setText(latitude + " , " + longitude);
                 }
 
 
