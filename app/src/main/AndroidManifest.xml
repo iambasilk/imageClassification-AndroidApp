@@ -3,11 +3,7 @@
     package="com.yep.user21.internprj1">
 
 
-    <receiver android:name=".NetworkStateChecker">
-        <intent-filter>
-            <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-        </intent-filter>
-    </receiver>
+
 
 
 <uses-permission android:name="android.permission.INTERNET" />
@@ -27,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

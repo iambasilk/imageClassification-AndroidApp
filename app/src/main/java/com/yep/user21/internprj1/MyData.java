@@ -9,6 +9,7 @@ public class MyData {
     public String desc;
     public String location;
     public String image;
+    public String user;
 
     public MyData() {
       /*Blank default constructor essential for Firebase*/
@@ -29,5 +30,8 @@ public class MyData {
 
     public void setLocation(String loc) {
         this.location = loc;
+    }
+    public void setUser(String usr) {
+        this.user = usr;
     }
 }

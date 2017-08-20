@@ -62,16 +62,14 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CODE_PERMISSION = 2;
     public VisionServiceClient visionServiceClient = new VisionServiceRestClient("6a628b5b0e3a4c119ba99dc4b9cb972d");
-//    public BroadcastReceiver mybroadcast;
-//    public static final String DATA_SAVED_BROADCAST = "com.yep.user21.internprj1.datasaved";
 
     public Bitmap imageBitmap;
-    public EditText textView;
+    public TextView textView;
     public  ImageView imageView;
-    public EditText txtLocation;
+    public TextView txtLocation;
+    public EditText txtUser;
     public ByteArrayInputStream inputStream;
     public ByteArrayOutputStream outputStream;
-    //public DatabaseHelper controller;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
     double latitude, longitude;
     GPSTracker gps;
@@ -84,10 +82,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //controller = new DatabaseHelper(this);
-
-
-
+        final IntentFilter intentFilter=new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         Button btnSave = (Button) findViewById(R.id.btnSave);
         Button btnTake = (Button) findViewById(R.id.btnTake);
 
@@ -100,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
             longitude = gps.getLongitude();
 
             //
-            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: "
-                    + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), " Location Fetched ", Toast.LENGTH_LONG).show();
         } else {
 
             // Ask user to enable GPS/network in settings
@@ -136,47 +130,30 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                final String tempName = textView.getText().toString();
-                final String tempLoc=  txtLocation.getText().toString();
 
 
-                        //loading the names again
-                        //loadNames();
+                writeData();
+                Toast.makeText(MainActivity.this,"Data Saved Succesfully",Toast.LENGTH_LONG).show();
 
-                        Firebase.setAndroidContext(MainActivity.this);
-                        Firebase ref = new Firebase(Config.FIREBASE_URL);
-
-                        ref.keepSynced(true);
-
-
-                       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-                        MyData Mydataobject=new MyData();
-
-                        Mydataobject.setLocation(tempLoc);
-                        Mydataobject.setDesc(tempName);
-                        byte[] byteFormat = outputStream.toByteArray();
-                        String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
-                        Mydataobject.setImage(encodedImage);
-
-
-
-
-
-                        ref.child("Details").push().setValue(Mydataobject);
-
-                        Toast.makeText(getApplicationContext(), "Data sent to cloud successfully", Toast.LENGTH_LONG).show();
-
-                        imageView.setImageDrawable(null);
-                        textView.setText("");
-                        txtLocation.setText("");
-
-                        System.out.println(tempName+" SAved to cloud succesfully basil!!!");
-
-
-
-
-
+//               broadcastReceiver=new CheckInternetBroadcast() {
+//                    @Override
+//                    public void onReceive(Context context, Intent intent) {
+//                        int[] type={ConnectivityManager.TYPE_WIFI,ConnectivityManager.TYPE_MOBILE};
+//                        if(isNetworkAvailable(context,type))
+//                        {
+//
+//                            Toast.makeText(MainActivity.this,"internet connection AAAAAAvailable",Toast.LENGTH_LONG).show();
+//                           // return;
+//                        }
+//                        else
+//                        {
+//                            writeData();
+//                            Toast.makeText(MainActivity.this,"internet connection not available",Toast.LENGTH_LONG).show();
+//                        }
+//
+//                    }
+//                };
+//                registerReceiver(broadcastReceiver,intentFilter);
 
 
 
@@ -198,6 +175,61 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+
+    public void writeData(){
+        final String tempName = textView.getText().toString();
+        final String tempLoc=  txtLocation.getText().toString();
+        txtUser=(EditText)findViewById(R.id.userDescription);
+        final String textUser=  txtUser.getText().toString();
+
+        //loading the names again
+        //loadNames();
+
+        Firebase.setAndroidContext(MainActivity.this);
+        Firebase ref = new Firebase(Config.FIREBASE_URL);
+
+        // ref.keepSynced(true);
+
+
+
+
+        MyData Mydataobject=new MyData();
+
+        Mydataobject.setLocation(tempLoc);
+        Mydataobject.setDesc(tempName);
+        Mydataobject.setUser(textUser);
+        byte[] byteFormat = outputStream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
+        Mydataobject.setImage(encodedImage);
+
+
+
+
+
+        ref.child("Details").push().setValue(Mydataobject);
+
+        //Toast.makeText(getApplicationContext(), "Data sent to cloud successfully", Toast.LENGTH_LONG).show();
+
+          imageView.setImageDrawable(null);
+          textView.setText("AI Prediction :");
+        txtLocation.setText("Location :");
+        txtUser.setText("");
+
+        System.out.println(tempName+" SAved to cloud succesfully basil!!!");
+
+    }
+
+
+
+    protected void Synchronization(int flag)
+    {
+        if(flag==1)
+        {
+           writeData(); //call webservice or sync Adapters here to synch data
+        }
+    }
     public void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -257,15 +289,15 @@ public class MainActivity extends AppCompatActivity {
                     mDialog.dismiss();
 
                     AnalysisResult result = new Gson().fromJson(s, AnalysisResult.class);
-                    textView = (EditText) findViewById(R.id.txtDescription);
-                    txtLocation= (EditText) findViewById(R.id.txtLocation);
+                    textView = (TextView) findViewById(R.id.txtDescription);
+                    txtLocation= (TextView) findViewById(R.id.txtLocation);
                     StringBuilder stringBuilder = new StringBuilder();
 
                     for (Caption caption : result.description.captions) {
                         stringBuilder.append(caption.text);
                     }
-                    textView.setText(stringBuilder);
-                    txtLocation.setText(latitude + " , " + longitude);
+                    textView.append(stringBuilder);
+                    txtLocation.append(latitude + " , " + longitude);
                 }
 
 

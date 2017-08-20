@@ -11,20 +11,30 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="4"/>
-
+        android:layout_weight="15"/>
 
 
     <EditText
-        android:id="@+id/txtDescription"
-        android:text="Description"
+        android:id="@+id/userDescription"
+
+        android:hint="Type your description.(if any)"
         android:layout_above="@+id/btn"
+        android:layout_weight=".5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/txtLocation"
-        android:text="Location"
+
+    <TextView
+        android:id="@+id/txtDescription"
+        android:text="AI Prediction :"
         android:layout_above="@+id/btn"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/txtLocation"
+        android:text="Location :"
+        android:layout_above="@+id/btn"
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
