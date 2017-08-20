@@ -5,16 +5,17 @@ package com.yep.user21.internprj1;
  */
 
 public class MyData {
-    //name and address string
+
     public String desc;
     public String location;
     public String image;
     public String user;
 
     public MyData() {
-      /*Blank default constructor essential for Firebase*/
+
     }
-    public String getDesc(){
+
+    public String getDesc() {
         return desc;
     }
 
@@ -23,14 +24,14 @@ public class MyData {
     }
 
 
-    public void setImage(String img)
-    {
-        this.image=img;
+    public void setImage(String img) {
+        this.image = img;
     }
 
     public void setLocation(String loc) {
         this.location = loc;
     }
+
     public void setUser(String usr) {
         this.user = usr;
     }
